@@ -34,23 +34,11 @@ class FluentAccessToken extends AbstractFluentAdapter implements AccessTokenInte
      */
     public function get($token)
     {
-/*        $result = $this->getConnection()->table('oauth_access_tokens')
-                ->where('oauth_access_tokens.id', $token)
-                ->first();*/
-        $result = Config::get('couch.client')->useDatabase('oauth_access_tokens')->find([
-                'selector'=> [
-                    'token'=>[
-                        '$eq'=>$token
-                    ]
-                ]
-            ])->docs;
-
+        $result = Config::get('couch.client')->useDatabase('oauth_access_tokens')->stale("ok")->keys($token)->getView('token', 'token')->rows;
         if (empty($result)) {
             return;
         }
-        
-        $result= $result[0];
-        
+        $result= $result[0]->value;
         return (new AccessTokenEntity($this->getServer()))
                ->setId($result->token)
                ->setExpireTime((int) $result->expire_time)
