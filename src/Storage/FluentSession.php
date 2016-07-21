@@ -45,7 +45,7 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
         if (is_null($result)) {
             return;
         }
-
+        config('session', $result);
         return (new SessionEntity($this->getServer()))
                ->setId($result->id)
                ->setOwner($result->owner_type, $result->owner_id);
@@ -60,18 +60,11 @@ class FluentSession extends AbstractFluentAdapter implements SessionInterface
      */
     public function getByAccessToken(AccessTokenEntity $accessToken)
     {
-        /*$result = $this->getConnection()->table('oauth_sessions')
-                ->select('oauth_sessions.*')
-                ->join('oauth_access_tokens', 'oauth_sessions.id', '=', 'oauth_access_tokens.session_id')
-                ->where('oauth_access_tokens.id', $accessToken->getId())
-                ->first();*/
-
         $result = Config::get('couch.client')->useDatabase('oauth_sessions')->getDoc($accessToken->getSessionId());
-
         if (is_null($result)) {
             return;
         }
-
+        config('session', $result);
         return (new SessionEntity($this->getServer()))
                ->setId($result->_id)
                ->setOwner($result->owner_type, $result->owner_id);
