@@ -34,7 +34,7 @@ class FluentAccessToken extends AbstractFluentAdapter implements AccessTokenInte
      */
     public function get($token)
     {
-        $result = Config::get('couch.client')->useDatabase('oauth_access_tokens')->stale("ok")->key($token)->getView('token', 'token')->rows;
+        $result = Config::get('couch.client')->useDatabase('oauth_access_tokens')->key($token)->getView('token', 'token')->rows;
         if (empty($result)) {
             return;
         }
